@@ -12,29 +12,30 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
-public class SellerDaoJDBC implements SellerDao{
+public class SellerDaoJDBC implements SellerDao {
 
 	private Connection conn;
-	
+
 	public SellerDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
+
 	@Override
 	public void insert(Seller obj) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void update(Seller obj) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteById(Integer id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -42,34 +43,34 @@ public class SellerDaoJDBC implements SellerDao{
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conn.prepareStatement("select seller.*, department.Name as DepName "
-					+ "from seller INNER JOIN department "
-					+ "ON seller.DepartmentId = department.Id "
-					+ "WHERE seller.id = ?");
-			
+			st = conn.prepareStatement(
+					"select seller.*, department.Name as DepName from seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id WHERE seller.id = ?");
+
 			st.setInt(1, id);
-			
+
 			rs = st.executeQuery();
-			
-			if(rs.next()) {
-				Seller seller = new Seller(rs.getInt("Id"),
-										rs.getString("Name"),
-										rs.getString("Email"),
-										rs.getDate("BirthDate"),
-										rs.getDouble("BaseSalary"),
-										new Department(rs.getInt("DepartmentId"),
-												rs.getString("DepName")));
-				
-				return seller;
+
+			if (rs.next()) {
+				return instantiateSeller(rs);
 			}
-			
+
 			return null;
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
 			DB.closeResultSet(rs);
 			DB.closeStatement(st);
 		}
+	}
+
+	private Seller instantiateSeller(ResultSet rs) throws SQLException {
+		return new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"),
+				rs.getDouble("BaseSalary"), instantiateDepartment(rs));
+	}
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		return new Department(rs.getInt("DepartmentId"), rs.getString("DepName"));
 	}
 
 	@Override
