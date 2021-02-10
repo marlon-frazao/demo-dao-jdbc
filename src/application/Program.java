@@ -13,6 +13,7 @@ public class Program {
 
 	public static void main(String[] args) {
 
+		Scanner sc = new Scanner(System.in);
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 
 		System.out.println("=== TEST 1: seller findById ===");
@@ -45,10 +46,12 @@ public class Program {
 		
 		System.out.println("\n=== TEST 6: seller delete ===");
 		System.out.print("Enter if for delete test: ");
-		Scanner sc = new Scanner(System.in);
+		
 		int id = sc.nextInt();
 		sellerDao.deleteById(id);
 		System.out.println("Delete completed!");
+		
+		sc.close();
 	}
 
 }
